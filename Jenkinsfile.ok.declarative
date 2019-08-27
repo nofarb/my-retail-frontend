@@ -1,0 +1,36 @@
+pipeline {
+  agent none
+  options {
+    timeout(time: 3, unit: 'DAYS')  //Timeout period for the Pipeline run. Time required for paused actions counts against the timeout. 
+  }
+  stages {
+    stage('Build') {
+      agent {
+        label "java"
+      }
+      steps {
+        withSonarQubeEnv('sonar.mycompany.com') {
+          sh "./mvnw clean verify"
+        }
+      }
+    }
+    stage('Quality Gate') {
+      steps {
+        waitForQualityGate abortPipeline:true // (i) not consuming an executing because "agent: none" at the top level
+      }
+    }
+    stage('Load Test') {
+      input {
+        message ''Deploy on load test environment?'
+      }
+      agent {
+        label 'load-test-agent'
+      }
+      steps {
+        echo "Load test..."
+        // ... will take several hours
+        echo "Load test finished"
+      }
+    }
+  }
+}  
