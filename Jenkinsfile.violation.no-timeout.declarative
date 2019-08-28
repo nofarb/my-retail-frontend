@@ -1,3 +1,5 @@
+//NO TIMEOUT ON PIPELINE, TIMEOUT EXISTS ON EXECUTORS
+
 pipeline {
   agent none
   stages {
