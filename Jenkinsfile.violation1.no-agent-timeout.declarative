@@ -1,0 +1,21 @@
+//NO TIMOUT ON PIPELINE, NO TIMOUT ON AGENT
+
+pipeline {
+
+agent none
+  stages { 
+    stage('Load Test') { //VIOLATION - NO TIMEOUT ON STAGE
+      agent {
+        label 'load-test-agent'
+      }
+      steps {
+        // timeout is in steps because a timeout on a "stage" would span across the "input" as well
+        timeout(time: 60, unit: 'MINUTES') { //executor timeout - wraps steps
+          echo "Load test..."
+          // ... will take several hours
+          echo "Load test finished"
+        }
+      }
+    }
+  }
+}
